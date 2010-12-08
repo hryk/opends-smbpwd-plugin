@@ -1,0 +1,6 @@
+src-generated
+ext
+build
+src/org
+.DS_Store
+bin

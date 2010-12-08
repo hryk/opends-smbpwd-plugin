@@ -1,0 +1,10 @@
+dn: cn=Smbpwd Plugin,cn=Plugins,cn=config
+objectClass: top
+objectClass: ds-cfg-plugin
+objectClass: ds-cfg-smbpwd-plugin
+cn: Smbpwd Plugin
+ds-cfg-enabled: true
+ds-cfg-java-class: com.example.opends.SmbpwdPlugin
+ds-cfg-plugin-type: preOperationModify
+ds-cfg-smbpwd-plugin-message: Hello World
+
