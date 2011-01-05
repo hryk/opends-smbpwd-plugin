@@ -142,14 +142,14 @@ public class SmbpwdPlugin extends
   @Override
   public final PluginResult.PreOperation
    doPreOperation(PreOperationModifyOperation modifyOperation){
-	// OID of sambaNTPassword
 	String sambaNTPwdOID = "1.3.6.1.4.1.7165.2.1.25"; // oid of sambantpassword
 	  DN entryDN = modifyOperation.getEntryDN();
-	if ( entryDN.isNullDN() ) {
-		return PluginResult.PreOperation.continueOperationProcessing();
-	}
 	
-	List<AttributeValue> newPasswords = modifyOperation.getNewPasswords();
+	  if ( entryDN.isNullDN() ) {
+		return PluginResult.PreOperation.continueOperationProcessing();
+	  }
+	
+	  List<AttributeValue> newPasswords = modifyOperation.getNewPasswords();
     
 	if (newPasswords != null) {
 		
@@ -168,17 +168,10 @@ public class SmbpwdPlugin extends
         		}
         		catch (DirectoryException e) {
             		Message message = NOTE_APPLY_CONFIGURATION_CHANGE.get(
-                            "+DirectoryException+",
-                            e.getMessage());
+                            "+DirectoryException+",e.getMessage());
             	    logError(message);
             	    return PluginResult.PreOperation.continueOperationProcessing();
         		}
-        		/*
-        		Message message = NOTE_APPLY_CONFIGURATION_CHANGE.get(
-                        String.valueOf(ntpwd_bytes),
-                        newNtpwd);
-        	    logError(message);
-        	    */
     		}
     	}
     	
