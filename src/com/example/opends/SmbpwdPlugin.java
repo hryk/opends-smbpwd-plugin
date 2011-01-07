@@ -37,15 +37,17 @@ import org.opends.server.api.plugin.DirectoryServerPlugin;
 import org.opends.server.config.ConfigException;
 
 import org.opends.server.types.Attribute;
+import org.opends.server.types.AttributeType;
 import org.opends.server.types.AttributeValue;
 import org.opends.server.types.Attributes;
 import org.opends.server.types.DirectoryException;
 import org.opends.server.types.DN;
+import org.opends.server.types.Entry;
 import org.opends.server.types.Modification;
 import org.opends.server.types.ModificationType;
-import org.opends.server.types.ResultCode;
 import org.opends.server.types.ConfigChangeResult;
 import org.opends.server.types.InitializationException;
+import org.opends.server.types.ResultCode;
 import org.opends.server.types.operation.PreOperationModifyOperation;
 // TODO : Support PreOperationAddOperation
 // import org.opends.server.types.operation.PreOperationAddOperation;
@@ -61,7 +63,6 @@ import jcifs.util.Hexdump;
 
 
 import com.example.opends.server.SmbpwdPluginCfg;
-
 import static com.example.opends.messages.SmbpwdPluginMessages.*;
 
 
@@ -111,8 +112,6 @@ public class SmbpwdPlugin extends
 	  for (PluginType t : pluginTypes) {
       switch (t) {
       case PRE_OPERATION_MODIFY:
-        // case POST_OPERATION_ADD:
-        // This is fine.
         break;
       default:
         Message message = ERR_INITIALIZE_PLUGIN.get(String.valueOf(t));
@@ -142,19 +141,25 @@ public class SmbpwdPlugin extends
   @Override
   public final PluginResult.PreOperation
    doPreOperation(PreOperationModifyOperation modifyOperation){
-	String sambaNTPwdOID = "1.3.6.1.4.1.7165.2.1.25"; // oid of sambantpassword
-	  DN entryDN = modifyOperation.getEntryDN();
+	String sambaNTPwdOID = "1.3.6.1.4.1.7165.2.1.25"; // oid of sambaNTpassword
+	DN entryDN = modifyOperation.getEntryDN();
+	Entry entry = modifyOperation.getCurrentEntry();
 	
-	  if ( entryDN.isNullDN() ) {
+	// Skip NullDN 
+	if ( entryDN.isNullDN() ) {
 		return PluginResult.PreOperation.continueOperationProcessing();
-	  }
+	}
+	// Skip DN without sambaNTPassword
+	AttributeType ntpwdType = Attributes.empty(sambaNTPwdOID).getAttributeType();
+	if (! entry.hasAttribute(ntpwdType) ) {
+		return PluginResult.PreOperation.continueOperationProcessing();
+	}
 	
-	  List<AttributeValue> newPasswords = modifyOperation.getNewPasswords();
+	List<AttributeValue> newPasswords = modifyOperation.getNewPasswords();
     
 	if (newPasswords != null) {
-		
     	for (AttributeValue v : newPasswords) {
-    		/* Create NTHash for new Password */
+    		/* Create NTHash of new Password */
     		String newNtpwd = generateNTHash(String.valueOf(v.getValue()));
     		
     		if (! newNtpwd.isEmpty()) {
@@ -174,8 +179,8 @@ public class SmbpwdPlugin extends
         		}
     		}
     	}
-    	
     }
+	
 	return PluginResult.PreOperation.continueOperationProcessing();
   }
 
