@@ -1,6 +1,11 @@
 OpenDS / OpenDJ Smbpwd Plugin
 ==============================
 
+
+OpenDS Smbpwd Plugin is a plugin to synchronize sambaNTpassword with LDAP password.
+
+
+
 This folder contains source code for an example "Hello World" style
 plugin. It features a plugin which has a configurable message (the
 default being "Hello World") which is displayed as a notice message
